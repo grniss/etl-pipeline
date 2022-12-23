@@ -1,0 +1,4 @@
+<property>
+    <name>hive.metastore.uris</name>
+    <value>thrift://hive-container:9083</value>
+  </property>
