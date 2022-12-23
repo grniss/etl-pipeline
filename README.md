@@ -124,5 +124,3 @@ docker-compose up -d postgres
 ## Reference
 
 - Hive without HDFS: https://funinit.wordpress.com/2020/12/08/how-to-start-apache-hive-without-hdfs/
-
-# hive-spark-etl
