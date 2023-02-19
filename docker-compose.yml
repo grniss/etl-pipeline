@@ -10,7 +10,7 @@ x-airflow-common: &airflow-common
     AIRFLOW__CELERY__BROKER_URL: redis://:@redis:6379/0
     AIRFLOW__CORE__FERNET_KEY: ""
     AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "true"
-    AIRFLOW__CORE__LOAD_EXAMPLES: "true"
+    AIRFLOW__CORE__LOAD_EXAMPLES: "false"
     AIRFLOW__CORE_dags_folder: "./dags"
     AIRFLOW__API__AUTH_BACKENDS: "airflow.api.auth.backend.basic_auth"
     _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-}
@@ -193,7 +193,7 @@ services:
       _PIP_ADDITIONAL_REQUIREMENTS: ""
     user: "0:0"
     volumes:
-      - .:/sources
+      - ./resources:/sources
     networks:
       - network-pg
 
@@ -224,11 +224,12 @@ services:
       - ./resources/spark/app:/usr/local/spark/app
       - ./resources/spark/resources:/usr/local/spark/resources
       - ./resources/output/:/opt/bitnami/spark/output
+      - ./resources/temp/:/usr/local/spark/temp
     ports:
       - 8081:8080
       - 7077:7077
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080"]
+      test: curl -f http://localhost:8080 | grep ALIVE
       interval: 1s
       timeout: 3s
       retries: 30
@@ -240,7 +241,7 @@ services:
 
   spark-worker:
     container_name: sc-worker-container
-    image: bitnami/spark:3.2.1
+    build: ./build/spark
     environment:
       - SPARK_MODE=worker
       - SPARK_MASTER_URL=spark://spark-master:7077
@@ -256,6 +257,7 @@ services:
     volumes:
       - ./resources/spark/app:/usr/local/spark/app
       - ./resources/spark/resources:/usr/local/spark/resources
+      - ./resources/output/:/opt/bitnami/spark/output
       - ./resources/temp/:/usr/local/spark/temp
     networks:
       - network-airflow

@@ -6,7 +6,8 @@ session = (SparkSession
         .builder
         .appName('etl-pg-hive')
         .enableHiveSupport()
-        .config("spark.sql.parquet.writeLegacyFormat",True)\
+        .config("spark.sql.parquet.writeLegacyFormat",True)
+        .master("spark://spark-master:7077")
         .getOrCreate()
 )
 
@@ -49,6 +50,9 @@ restaurant_detail_new = restaurant_detail.withColumn("cooking_bin",
                     .otherwise(lit(4)))))
 restaurant_detail_new.write.partitionBy("dt").mode("overwrite").format("parquet").saveAsTable("restaurant_detail_new")
 
+import os
+import glob
+import shutil
 
 discount = order_detail_new \
                 .join(restaurant_detail_new, order_detail_new.restaurant_id == restaurant_detail.id, "left") \
@@ -58,12 +62,21 @@ discount.coalesce(1) \
    .write.format("com.databricks.spark.csv") \
    .option("header", "true") \
    .mode("overwrite") \
-   .save("output/discount.csv")
+   .save("output/discount")
 
+discount_csv = glob.glob("output/discount/*.csv")[0]
+os.rename(discount_csv, "output/discount.csv")
+shutil.rmtree("output/discount")
 
 cooking = restaurant_detail_new.groupBy("cooking_bin").count()
 cooking.coalesce(1) \
    .write.format("com.databricks.spark.csv") \
    .option("header", "true") \
    .mode("overwrite") \
-   .save("output/cooking.csv")
+   .save("output/cooking")
+
+cooking_csv = glob.glob("output/cooking/*.csv")[0]
+os.rename(cooking_csv, "output/cooking.csv")
+shutil.rmtree("output/cooking")
+
+session.stop()
