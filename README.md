@@ -30,6 +30,10 @@ The complete version of this architecture is aim to use hive without hadoop, sin
 
 ## How to run
 
+For easily virtualization, chmod the folder inside this repo to enable output file in this folder
+
+`chmod 666 ./resources/output`
+
 `docker-compose up -d`
 
 ## If there are any problem please run
