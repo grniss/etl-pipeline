@@ -1,4 +1,4 @@
-# etl-pipeline [UNFINISHED]
+# etl-pipeline
 
 This repository is purpose to create etl process to using airflow to execute sparksql for move data from postgresql to hive external table.
 
