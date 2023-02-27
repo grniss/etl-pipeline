@@ -30,13 +30,13 @@ The complete version of this architecture is aim to use hive without hadoop, sin
 
 ## How to run
 
-For easily virtualization, chmod the folder inside this repo to enable output file in this folder
+For easily illustration, chmod the folder inside this repo to enable output file in this folder
+```
+mkdir ./resources/output
+chmod 666 ./resources/output
+```
 
-`chmod 666 ./resources/output`
-
-`docker-compose up -d`
-
-## If there are any problem please run
+### With limited time, I work around to enable airflow to run spark job by calling another docker container
 
 ```
 docker exec -u 0 sc-master-container chmod 777 /opt/bitnami/spark/output
@@ -45,6 +45,10 @@ docker exec -u 0 etl-pipeline-airflow-webserver-1 chmod 777 /var/run/docker.sock
 docker exec -u 0 etl-pipeline-airflow-triggerer-1 chmod 777 /var/run/docker.sock
 docker exec -u 0 etl-pipeline-airflow-scheduler-1 chmod 777 /var/run/docker.sock
 ```
+
+### Finally run 
+
+`docker-compose up -d`
 
 ## How to test
 
